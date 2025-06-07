@@ -1,0 +1,25 @@
+[package]
+name = "edgemon"
+version = "0.0.1"
+description = "Monitor your PC with style using VSDISPLAY Portable Touch Monitor, 14 Inch 4K IPS Stretched Bar Screen, 3840 x 1100"
+authors = ["Kris Henriksen"]
+license = "MIT"
+repository = ""
+edition = "2024"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+tauri-build = { version = "2.2.0", features = [] }
+
+[dependencies]
+serde_json = "1.0.140"
+shell-util = "0.0.0"
+tauri = { version = "2.5.0", features = [] }
+
+[profile.release]
+lto = "fat"
+panic = "abort"
+strip = true
+codegen-units = 1
+opt-level = "z"
