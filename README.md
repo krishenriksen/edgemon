@@ -1,3 +1,5 @@
+![Edgemon](./Screenshot%202025-06-07%20221513.png)
+
 ## Usage
 
 ```bash

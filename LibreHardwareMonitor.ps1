@@ -92,7 +92,6 @@ foreach ($hardware in $monitor.Hardware) {
 
     # Gather RAM metrics
     if ($hardware.HardwareType -like "*Memory*") {
-        
         foreach ($sensor in $hardware.Sensors) {
             if ($sensor.SensorType -eq "Load" -and $sensor.Name -eq "Memory") {
                 $ramLoad = [math]::Round($sensor.Value)
