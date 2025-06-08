@@ -278,15 +278,6 @@ body {
   font-weight: bold;
 }
 
-.fps-display {
-  font-size: 5vw;
-  font-weight: normal;
-}
-
-.fps-label {
-  font-size: 5vw;
-}
-
 .upload {
   color: #ff7373;
   font-size: 3vw;

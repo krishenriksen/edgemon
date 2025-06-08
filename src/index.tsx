@@ -3,6 +3,7 @@ import { render } from "solid-js/web";
 import { createSignal, onMount, onCleanup } from "solid-js";
 import { invoke } from "@tauri-apps/api/core";
 import "./index.css";
+import config from "../desktop/resources/edgemon.config.json";
 
 const root = document.getElementById("root");
 
@@ -22,11 +23,13 @@ function App() {
   const [ramUsage, setRamUsage] = createSignal(42);
   const [ramUsedGB, setRamUsedGB] = createSignal(0);
   const [ramFreeGB, setRamFreeGB] = createSignal(0);
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const [ramTemp, setRamTemp] = createSignal(0);
-  const [ramFrequency, setRamFrequency] = createSignal(0);
+  const [ramFrequency, setRamFrequency] = createSignal(config.ramFrequency ?? 0);
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  const [fps, setFps] = createSignal(0);
+  // Network upload/download (KB/s)
+  const [netUp, setNetUp] = createSignal(0);
+  const [netDl, setNetDl] = createSignal(0);
 
   const fetchHardwareInfo = async () => {
     try {
@@ -56,6 +59,10 @@ function App() {
         setRamUsedGB(hw.ram.used ?? ramUsedGB());
         setRamFreeGB(hw.ram.free ?? ramFreeGB());
       }
+
+      // Update Network info
+      if (hw.NetUp !== undefined) setNetUp(hw.NetUp);
+      if (hw.NetDl !== undefined) setNetDl(hw.NetDl);
     } catch (e) {
       console.error("Failed to get hardware info:", e);
     }
@@ -66,7 +73,7 @@ function App() {
     await fetchHardwareInfo();
 
     // Set up polling interval
-    const intervalId = setInterval(fetchHardwareInfo, 5000);
+    const intervalId = setInterval(fetchHardwareInfo, 2500);
 
     // Clean up the interval on component unmount
     onCleanup(() => clearInterval(intervalId));
@@ -219,10 +226,10 @@ function App() {
           <div class="gauge-container">
             <div class="gauge-memory">
               <div>
-                <span>USED</span> {gpuMemUsed()} <span>MB</span>
+                <span>USED</span> {Math.round(gpuMemUsed() / 1024)} <span>GB</span>
               </div>
               <div>
-                <span>FREE</span> {gpuMemFree()} <span>MB</span>
+                <span>FREE</span> {Math.round(gpuMemFree() / 1024)} <span>GB</span>
               </div>
             </div>
             <div class="gauge-value">{gpuTemp()}</div>
@@ -452,13 +459,11 @@ function App() {
       </div>
 
       <div class="bottom-panel">
-        <div class="fps-display">{fps()}</div>
-        <div class="fps-label">FPS</div>
         <div class="upload">
-          UP <span>00KB/s</span>
+          UP <span>{Math.round((netUp() * 8) / 1_000_000)}</span> Mbit/s
         </div>
         <div class="download">
-          DL <span>00KB/s</span>
+          DL <span>{Math.round((netDl() * 8) / 1_000_000)}</span> Mbit/s
         </div>
       </div>
     </div>

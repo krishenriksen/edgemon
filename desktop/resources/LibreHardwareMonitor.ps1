@@ -21,6 +21,9 @@ $gpuTotalLoad = $null
 $gpuTemperature = $null
 $gpuFrequency = $null
 $gpuPackagePower = $null
+$gpuMemUsed = $null
+$gpuMemFree = $null
+$gpuMemTotal = $null
 
 $ramLoad = $null
 $ramUsed = $null
@@ -38,19 +41,16 @@ foreach ($hardware in $monitor.Hardware) {
                         $cpuTotalLoad = [math]::Round($sensor.Value)
                     }
                 }
-
                 "Temperature" {
                     if ($sensor.Name -like "CPU Package") {
                         $cpuPackageTemp = $sensor.Value
                     }
                 }
-
                 "Clock" {
                     if ($sensor.Name -like "CPU Core*" -and $cpuFrequency -eq $null) {
                         $cpuFrequency = [math]::Round($sensor.Value)
                     }
                 }
-
                 "Power" {
                     if ($sensor.Name -like "*Package*") {
                         $cpuPackagePower = [math]::Round($sensor.Value)
@@ -66,7 +66,6 @@ foreach ($hardware in $monitor.Hardware) {
             if ($sensor.SensorType -eq "Load" -and $sensor.Name -like "GPU Core") {
                 $gpuTotalLoad = [math]::Round($sensor.Value)
             }
-
             if ($sensor.SensorType -eq "SmallData" -and $sensor.Name -like "*Memory Used*") {
                 $gpuMemUsed = [math]::Round($sensor.Value)
             }
@@ -76,15 +75,12 @@ foreach ($hardware in $monitor.Hardware) {
             if ($sensor.SensorType -eq "SmallData" -and $sensor.Name -like "*Memory Total*") {
                 $gpuMemTotal = [math]::Round($sensor.Value)
             }            
-
             if ($sensor.SensorType -eq "Temperature" -and $gpuTemperature -eq $null) {
                 $gpuTemperature = [math]::Round($sensor.Value)
             }
-            
             if ($sensor.SensorType -eq "Clock" -and $sensor.Name -like "GPU Core*" -and $gpuFrequency -eq $null) {
                 $gpuFrequency = [math]::Round($sensor.Value)
             }
-            
             if ($sensor.SensorType -eq "Power") {
                 $gpuPackagePower = [math]::Round($sensor.Value)
             }
@@ -97,7 +93,6 @@ foreach ($hardware in $monitor.Hardware) {
             if ($sensor.SensorType -eq "Load" -and $sensor.Name -eq "Memory") {
                 $ramLoad = [math]::Round($sensor.Value)
             }
-
             if ($sensor.SensorType -eq "Data" -and $sensor.Name -like "Memory Used") {
                 $ramUsed = [math]::Round($sensor.Value)
             }
@@ -108,6 +103,12 @@ foreach ($hardware in $monitor.Hardware) {
     }    
 }
 
+# Gather Network metrics (upload/download speed in bytes/sec)
+# Uses Get-Counter for compatibility (returns bytes/sec directly)
+$netCounters = Get-Counter -Counter "\Network Interface(*)\Bytes Sent/sec","\Network Interface(*)\Bytes Received/sec"
+$netUpSpeed = [math]::Round(($netCounters.CounterSamples | Where-Object {$_.Path -like "*Bytes Sent/sec"} | Measure-Object -Property CookedValue -Sum).Sum)
+$netDlSpeed = [math]::Round(($netCounters.CounterSamples | Where-Object {$_.Path -like "*Bytes Received/sec"} | Measure-Object -Property CookedValue -Sum).Sum)
+
 # Output results as JSON key-value object
 $outputObject = [PSCustomObject]@{
     CpuTotalLoad    = $cpuTotalLoad
@@ -115,7 +116,7 @@ $outputObject = [PSCustomObject]@{
     CpuFrequency    = $cpuFrequency
     CpuPackagePower = $cpuPackagePower
 
-    GpuTotalLoad    = $GpuTotalLoad
+    GpuTotalLoad    = $gpuTotalLoad
     GpuMemoryUsed   = $gpuMemUsed
     GpuMemoryFree   = $gpuMemFree
     GpuMemoryTotal  = $gpuMemTotal    
@@ -125,7 +126,10 @@ $outputObject = [PSCustomObject]@{
 
     RamLoad         = $ramLoad
     RamUsed         = $ramUsed
-    RamFree         = $ramFree 
+    RamFree         = $ramFree
+
+    NetUp           = $netUpSpeed
+    NetDl           = $netDlSpeed
 }
 $outputJson = $outputObject | ConvertTo-Json -Compress
 Write-Output $outputJson

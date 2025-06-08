@@ -72,10 +72,16 @@ async fn get_hardware_info() -> serde_json::Value {
                     "used": json.get("RamUsed").cloned(),
                     "free": json.get("RamFree").cloned()
                 });
+                // Add network up/down in MB/s
+                let net_up = json.get("NetUp").cloned();
+                let net_dl = json.get("NetDl").cloned();
+
                 return json!({
                     "cpu": cpu,
                     "gpu": gpu,
-                    "ram": ram
+                    "ram": ram,
+                    "NetUp": net_up,
+                    "NetDl": net_dl
                 });
             }
         }
@@ -101,7 +107,9 @@ async fn get_hardware_info() -> serde_json::Value {
             "usage": null,
             "used": null,
             "free": null
-        }
+        },
+        "NetUp": null,
+        "NetDl": null
     })
 }
 

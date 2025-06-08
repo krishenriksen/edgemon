@@ -14,6 +14,14 @@ In the project directory, you can run:
 
 ### `pnpm run dev`
 
+You can set static values such as RAM frequency in the `edgemon.config.json` file.
+For example:
+```json
+{
+  "ramFrequency": 6000
+}
+```
+
 ## Issues
 
 Could not load file or assembly ...LibreHardwareMonitorLib.dll... Operation is not supported. (Exception from HRESULT: 0x80131515)
