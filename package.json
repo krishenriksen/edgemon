@@ -4,20 +4,11 @@
   "version": "0.0.1",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc --noEmit && vite build && tauri build -- --target x86_64-pc-windows-gnu --verbose",
-    "typecheck": "tsc --noEmit"
-  },
-  "dependencies": {
-    "@tauri-apps/api": "^2.5.0",
-    "install": "^0.13.0",
-    "solid-js": "^1.9.5"
+    "build": "pnpm run -r build",
+    "format": "prettier --write .",
+    "lint": "prettier --check . && pnpm run -r lint"
   },
   "devDependencies": {
-    "@tauri-apps/cli": "^2.5.0",
-    "@types/node": "^20.11.0",
-    "typescript": "~5.8.3",
-    "vite": "^6.3.5",
-    "vite-plugin-solid": "^2.11.6"
+    "prettier": "^3.5.3"
   }
 }

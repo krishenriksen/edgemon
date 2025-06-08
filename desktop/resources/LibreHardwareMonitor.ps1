@@ -1,5 +1,6 @@
 # Load the LibreHardwareMonitorLib.dll
-$dllPath = "LibreHardwareMonitorLib.dll"
+$scriptDir = Split-Path -Parent $MyInvocation.MyCommand.Definition
+$dllPath = Join-Path $scriptDir "LibreHardwareMonitorLib.dll"
 Unblock-File -LiteralPath $dllPath
 Add-Type -LiteralPath $dllPath
 

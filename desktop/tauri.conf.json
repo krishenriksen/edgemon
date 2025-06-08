@@ -1,0 +1,49 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "EdgeMon",
+  "version": "0.0.1",
+  "identifier": "dk.krishenrikden.edgemon",
+  "build": {
+    "frontendDist": "../src/dist",
+    "devUrl": "http://localhost:3000",
+    "beforeDevCommand": "",
+    "beforeBuildCommand": "",
+    "beforeBundleCommand": "./upx-tauri.sh"
+  },
+  "bundle": {
+    "active": true,
+    "icon": [
+      "resources/icons/32x32.png",
+      "resources/icons/128x128.png",
+      "resources/icons/128x128@2x.png",
+      "resources/icons/icon.ico"
+    ],
+    "shortDescription": "EdgeBar",
+    "category": "Utility",
+    "publisher": "Kris Henriksen",
+    "targets": ["nsis"],
+    "resources": ["resources/*"],
+    "windows": {
+      "nsis": {
+        "installerIcon": "resources/icons/icon.ico",
+        "compression": "lzma"
+      }
+    }
+  },
+  "app": {
+    "windows": [
+      {
+        "title": "EdgeMon",
+        "width": 600,
+        "height": 800,
+        "resizable": true,
+        "fullscreen": false,
+        "minimizable": false,
+        "closable": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  }
+}

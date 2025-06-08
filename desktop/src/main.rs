@@ -1,18 +1,18 @@
 // Prevents additional console window on Windows in release, DO NOT REMOVE!!
 #![cfg_attr(not(debug_assertions), windows_subsystem = "windows")]
 
-use tauri::{Manager, PhysicalPosition};
+use serde_json::{Value, json};
+use shell_util::{CommandOptions, Shell};
 use std::fs;
-use serde_json::{json, Value};
 use std::path::PathBuf;
-use shell_util::{Shell, CommandOptions};
+use tauri::{Manager, PhysicalPosition};
 
 fn get_config_path(filename: &str) -> PathBuf {
     let exe_dir = std::env::current_exe()
         .ok()
         .and_then(|p| p.parent().map(|p| p.to_path_buf()))
         .unwrap_or_else(|| PathBuf::from("."));
-    exe_dir.join(filename)
+    exe_dir.join("resources").join(filename)
 }
 
 fn save_monitor_info(monitor_position: (i32, i32)) {
@@ -41,12 +41,13 @@ async fn get_hardware_info() -> serde_json::Value {
     // Build PowerShell command to run the script
     let args = [
         "-NoProfile",
-        "-ExecutionPolicy", "Bypass",
-        "-File", script_path_str,
+        "-ExecutionPolicy",
+        "Bypass",
+        "-File",
+        script_path_str,
     ];
 
-    let output = Shell::exec("powershell", &args, &CommandOptions::default())
-        .await;
+    let output = Shell::exec("powershell", &args, &CommandOptions::default()).await;
 
     if let Ok(output) = output {
         if let Some(stdout) = output.stdout.as_str() {
@@ -126,7 +127,7 @@ fn main() {
                                 let pos = monitor.position();
                                 save_monitor_info((pos.x, pos.y));
                             }
-                        }                        
+                        }
                     }
                 }
             });
