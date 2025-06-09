@@ -9,11 +9,17 @@ const root = document.getElementById("root");
 
 function App() {
   const [cpuUsage, setCpuUsage] = createSignal(42);
+  const [cpuHistory, setCpuHistory] = createSignal(
+    Array.from({ length: 60 }, () => 30 + Math.random() * 40)
+  );
   const [cpuTemp, setCpuTemp] = createSignal(0);
   const [cpuFrequency, setCpuFrequency] = createSignal(0);
   const [cpuPower, setCpuPower] = createSignal(0);
 
   const [gpuUsage, setGpuUsage] = createSignal(42);
+  const [gpuHistory, setGpuHistory] = createSignal(
+    Array.from({ length: 60 }, () => 30 + Math.random() * 40)
+  );
   const [gpuMemUsed, setGpuMemUsed] = createSignal(0);
   const [gpuMemFree, setGpuMemFree] = createSignal(0);
   const [gpuTemp, setGpuTemp] = createSignal(0);
@@ -21,6 +27,9 @@ function App() {
   const [gpuPower, setGpuPower] = createSignal(0);
 
   const [ramUsage, setRamUsage] = createSignal(42);
+  const [ramHistory, setRamHistory] = createSignal(
+    Array.from({ length: 60 }, () => 30 + Math.random() * 40)
+  );  
   const [ramUsedGB, setRamUsedGB] = createSignal(0);
   const [ramFreeGB, setRamFreeGB] = createSignal(0);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -38,6 +47,13 @@ function App() {
       // Update CPU info
       if (hw.cpu) {
         setCpuUsage(hw.cpu.usage ?? cpuUsage());
+
+        // Update CPU history
+        setCpuHistory(prev => {
+          const next = [...prev, hw.cpu.usage ?? cpuUsage()];
+          return next.length > 60 ? next.slice(next.length - 60) : next;
+        });
+
         setCpuTemp(hw.cpu.temperature ?? cpuTemp());
         setCpuFrequency(hw.cpu.frequency ?? cpuFrequency());
         setCpuPower(hw.cpu.power ?? cpuPower());
@@ -46,6 +62,13 @@ function App() {
       // Update GPU info if available
       if (hw.gpu) {
         setGpuUsage(hw.gpu.usage ?? gpuUsage());
+
+        // Update GPU history
+        setGpuHistory(prev => {
+          const next = [...prev, hw.gpu.usage ?? gpuUsage()];
+          return next.length > 60 ? next.slice(next.length - 60) : next;
+        });
+
         setGpuMemUsed(hw.gpu.memory_used ?? gpuMemUsed());
         setGpuMemFree(hw.gpu.memory_free ?? gpuMemFree());
         setGpuTemp(hw.gpu.temperature ?? gpuTemp());
@@ -56,6 +79,13 @@ function App() {
       // Update RAM info
       if (hw.ram) {
         setRamUsage(hw.ram.usage ?? ramUsage());
+
+        // Update RAM history
+        setRamHistory(prev => {
+          const next = [...prev, hw.ram.usage ?? ramUsage()];
+          return next.length > 60 ? next.slice(next.length - 60) : next;
+        });
+
         setRamUsedGB(hw.ram.used ?? ramUsedGB());
         setRamFreeGB(hw.ram.free ?? ramFreeGB());
       }
@@ -90,6 +120,11 @@ function App() {
             </div>
             <div class="gauge" data-percentage={cpuUsage()}>
               <svg viewBox="0 0 120 120">
+                <defs>
+                  <clipPath id="gauge-inner-clip-cpu">
+                    <circle cx="60" cy="60" r="46" />
+                  </clipPath>
+                </defs>
                 <circle class="gauge-background" cx="60" cy="60" r="54" />
                 <circle class="gauge-outer-ring" cx="60" cy="60" r="57" />
                 <circle class="gauge-inner-ring" cx="60" cy="60" r="46" />
@@ -156,6 +191,20 @@ function App() {
                     UTILIZATION
                   </textPath>
                 </text>
+
+                <polyline
+                  class="history"
+                  clip-path="url(#gauge-inner-clip-cpu)"
+                  points={
+                    cpuHistory()
+                      .map((v, i, arr) => {
+                        const x = 14 + (i / (arr.length - 1 || 1)) * (106 - 14);
+                        const y = 106 - (v / 100) * (106 - 14);
+                        return `${x},${y}`;
+                      })
+                      .join(" ")
+                  }
+                />
               </svg>
             </div>
           </div>
@@ -238,6 +287,12 @@ function App() {
             </div>
             <div class="gauge" data-percentage={gpuUsage()}>
               <svg viewBox="0 0 120 120">
+                <defs>
+                  <clipPath id="gauge-inner-clip-gpu">
+                    <circle cx="60" cy="60" r="46" />
+                  </clipPath>
+                </defs>
+                
                 <circle class="gauge-background" cx="60" cy="60" r="54" />
                 <circle class="gauge-outer-ring" cx="60" cy="60" r="57" />
                 <circle class="gauge-inner-ring" cx="60" cy="60" r="46" />
@@ -304,6 +359,20 @@ function App() {
                     UTILIZATION
                   </textPath>
                 </text>
+
+                <polyline
+                  class="history"
+                  clip-path="url(#gauge-inner-clip-gpu)"
+                  points={
+                    gpuHistory()
+                      .map((v, i, arr) => {
+                        const x = 14 + (i / (arr.length - 1 || 1)) * (106 - 14);
+                        const y = 106 - (v / 100) * (106 - 14);
+                        return `${x},${y}`;
+                      })
+                      .join(" ")
+                  }
+                />
               </svg>
             </div>
           </div>
@@ -386,6 +455,12 @@ function App() {
             </div>
             <div class="gauge" data-percentage={ramUsage()}>
               <svg viewBox="0 0 120 120">
+                <defs>
+                  <clipPath id="gauge-inner-clip-ram">
+                    <circle cx="60" cy="60" r="46" />
+                  </clipPath>
+                </defs>
+                
                 <circle class="gauge-background" cx="60" cy="60" r="54" />
                 <circle class="gauge-outer-ring" cx="60" cy="60" r="57" />
                 <circle class="gauge-inner-ring" cx="60" cy="60" r="46" />
@@ -452,6 +527,20 @@ function App() {
                     UTILIZATION
                   </textPath>
                 </text>
+
+                <polyline
+                  class="history"
+                  clip-path="url(#gauge-inner-clip-ram)"
+                  points={
+                    ramHistory()
+                      .map((v, i, arr) => {
+                        const x = 14 + (i / (arr.length - 1 || 1)) * (106 - 14);
+                        const y = 106 - (v / 100) * (106 - 14);
+                        return `${x},${y}`;
+                      })
+                      .join(" ")
+                  }
+                />
               </svg>
             </div>
           </div>

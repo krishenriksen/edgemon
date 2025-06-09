@@ -168,15 +168,18 @@ body {
 }
 
 /* For the continuous gauge progress */
-.cpu .gauge-progress {
+.cpu .gauge-progress,
+.cpu .history {
   stroke: rgb(255, 105, 255);
 }
 
-.gpu .gauge-progress {
+.gpu .gauge-progress,
+.gpu .history {
   stroke: rgb(100, 255, 100);
 }
 
-.ram .gauge-progress {
+.ram .gauge-progress,
+.ram .history {
   stroke: rgb(100, 170, 255);
 }
 
@@ -188,6 +191,18 @@ body {
 .cpu .gauge-utilization {
   color: #ff73ff;
   fill: #ff73ff;
+}
+
+.cpu .history,
+.gpu .history,
+.ram .history {
+  fill: none;
+  stroke-width: 1px;
+  stroke-linecap: round;
+  transform-origin: center;
+  transform: rotate(90deg);
+  transition: stroke-dasharray 0.3s ease;
+  opacity: 0.2;
 }
 
 .gpu .gauge-label {
