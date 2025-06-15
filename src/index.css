@@ -290,19 +290,17 @@ body {
   justify-content: space-between;
   align-items: center;
   margin-top: 50px;
-  font-weight: bold;
 }
 
 .upload {
   color: #ff7373;
-  font-size: 3vw;
 }
 
 .download {
   color: #73ff73;
-  font-size: 3vw;
 }
 
 .bottom-panel span {
-  font-weight: normal;
+  font-size: 3vw;
+  font-weight: bold;
 }

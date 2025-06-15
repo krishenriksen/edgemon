@@ -119,6 +119,10 @@ fn main() {
         .setup(|app| {
             let main_window = app.get_webview_window("main").unwrap();
 
+            // Make the window a "tool window"
+            let _ = main_window.set_always_on_top(true);
+            let _ = main_window.set_skip_taskbar(true);
+
             if let Some((x, y)) = load_monitor_info() {
                 let _ = main_window.set_position(PhysicalPosition::new(x, y));
                 let _ = main_window.set_fullscreen(true);

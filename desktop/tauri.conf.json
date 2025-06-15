@@ -36,6 +36,8 @@
         "title": "EdgeMon",
         "width": 600,
         "height": 800,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
         "resizable": true,
         "fullscreen": false,
         "minimizable": false,

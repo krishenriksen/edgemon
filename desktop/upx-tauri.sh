@@ -9,5 +9,6 @@ if [ -z "$BIN_PATH" ]; then
   exit 1
 fi
 
-echo "Compressing $BIN_PATH with UPX..."
-upx --best --lzma "$BIN_PATH"
+# Windows 11 Defender issues
+#echo "Compressing $BIN_PATH with UPX..."
+#upx --best --lzma "$BIN_PATH"
